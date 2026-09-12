@@ -72,3 +72,12 @@ ls
 find . -type f -size 1033c ! -executable
 cat ./maybehere07/.file2
 ```
+
+### Level 6 -> 7
+**Concept:** Searching the entire root filesystem using specific ownership properties (user and group) and exact byte sizes while redirecting error streams (`2>/dev/null`) to filter out permission errors.
+
+**Command:**
+```bash
+find / -user bandit7 -group bandit6 -size 33c 2>/dev/null
+cat /var/lib/dpkg/info/bandit7.password
+```
