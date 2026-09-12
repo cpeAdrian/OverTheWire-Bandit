@@ -219,3 +219,26 @@ sort filename.txt | uniq [flag]
 * **Count occurrences (`-c`):** `sort files.txt | uniq -c` (Prefixes each line with the number of times it repeated).
 * **Show only completely unique lines (`-u`):** `sort files.txt | uniq -u` (Completely hides any line that had a duplicate).
 * **Show only duplicated lines (`-d`):** `sort files.txt | uniq -d` (Prints only the lines that repeated).
+
+---
+
+### Level 9 -> 10
+**Concept:** Extracting human-readable text strings from a compiled binary file using `strings` and filtering the text output with `grep`.
+
+**Command:**
+```bash
+strings data.txt | grep "==="
+```
+
+**How it works in practice:**
+Standard text tools like `grep` fail when targeting raw binary files because the terminal gets overwhelmed by machine code. The `strings` utility strips away all the corrupted binary characters and isolates text sequences longer than 4 characters. Piping that clean stream into `grep "==="` instantly targets the pattern surrounding the password.
+
+The basic syntax is:
+```bash
+strings filename | grep "search_term"
+```
+
+**Common Examples & Flags:**
+* **Extract text from a binary:** `strings program_file` (Dumps all ASCII strings hidden inside an executable or data blob).
+* **Change minimum string length (`-n`):** `strings -n 8 data.txt` (Only extracts text strings that are 8 characters or longer).
+* **Scan the whole file (`-a`):** `strings -a data.txt` (Forces the tool to scan every single byte of the file, not just the data sections).
