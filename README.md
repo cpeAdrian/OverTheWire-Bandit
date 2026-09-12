@@ -242,3 +242,27 @@ strings filename | grep "search_term"
 * **Extract text from a binary:** `strings program_file` (Dumps all ASCII strings hidden inside an executable or data blob).
 * **Change minimum string length (`-n`):** `strings -n 8 data.txt` (Only extracts text strings that are 8 characters or longer).
 * **Scan the whole file (`-a`):** `strings -a data.txt` (Forces the tool to scan every single byte of the file, not just the data sections).
+
+---
+
+### Level 10 -> 11
+**Concept:** Decoding base64-encoded strings using the `base64` utility and piping text inputs with `echo -n` to bypass trailing newlines.
+
+**Command:**
+```bash
+echo -n "VGhlIHBhc3N3b3JkIGlzIHBZZk9ZNkh3VXNEajVyTDlVdnloVTdNQ212OHZONVJvCg==" | base64 -d
+```
+
+**How it works in practice:**
+Base64 is a binary-to-text encoding scheme often used to transmit data securely across systems without data corruption. It isn't encryption, so anyone can read it if they decode it. By passing the encoded string through `echo -n` (which prevents adding a hidden new line at the end) and piping it to `base64 -d`, the terminal instantly translates the scrambled characters back into human-readable text.
+
+The basic syntax is:
+```bash
+echo -n "encoded_string" | base64 -d
+```
+*(Alternatively, you can decode directly from a file using: `base64 -d filename.txt`)*
+
+**Common Examples & Flags:**
+* **Decode data (`-d` / `--decode`):** `base64 -d file.b64` (Converts a Base64 text file back into its original text or binary format).
+* **Encode text into Base64:** `echo -n "hello" | base64` (Converts the plain text string "hello" into a Base64 encoded string).
+* **Ignore garbage characters (`-i`):** `base64 -d -i file.b64` (Ignores non-alphabet characters like random newlines or spaces that might break the decoder).
