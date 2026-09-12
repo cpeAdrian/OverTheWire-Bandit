@@ -4,7 +4,7 @@ A personal writeup and command cheat sheet for completing the OverTheWire Bandit
 ---
 
 ### Level 0 -> 1
-**Concept:** Connecting via SSH and reading simple text files.
+**Concept:** Connecting via Secure Shell (SSH) to a remote server and reading simple text files.
 
 **Command:**
 ```bash
@@ -12,6 +12,20 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 ls
 cat readme
 ```
+
+**How it works in practice:**
+Instead of using a graphical user interface (like clicking through folders in Windows or macOS), you use the terminal to securely log into a remote machine (`ssh`), view its contents (`ls`), and dump the text of a file straight onto your screen (`cat`).
+
+The basic syntax is:
+```bash
+ssh username@host -p port
+cat filename
+```
+
+**Common Examples & Flags:**
+* **Connect to a custom port (`-p`):** `ssh user@host -p 2220` (Specifies the port if it isn't the default 22).
+* **List all files including hidden ones (`-a`):** `ls -a` (Reveals files starting with a dot).
+* **List files with detailed info (`-l`):** `ls -l` (Shows file sizes, owners, and permissions).
 
 ---
 
@@ -24,10 +38,22 @@ ls
 cat ./-
 ```
 
+**How it works in practice:**
+Many Linux commands use a hyphen (`-`) to specify flags (like `-l` or `-a`). If a file is literally named `-`, typing `cat -` confuses the system because it thinks you are trying to pass an incomplete option. To fix this, you explicitly tell Linux to look at the current folder location (`./`) first.
+
+The basic syntax is:
+```bash
+cat ./filename
+```
+
+**Common Examples & Flags:**
+* **Target a file in the current directory (`./`):** `cat ./-file` (Forces the program to treat the hyphen as a filename string).
+* **Target a file by absolute path (`/`):** `cat /home/bandit1/-` (Bypasses option parsing by using the full system folder structure).
+
 ---
 
 ### Level 2 -> 3
-**Concept:** Accessing files containing spaces in their filenames by wrapping the path in double quotes.
+**Concept:** Accessing files containing spaces in their filenames by wrapping the path in double quotes or escaping.
 
 **Command:**
 ```bash
@@ -35,17 +61,42 @@ ls
 cat "spaces in this filename"
 ```
 
+**How it works in practice:**
+Linux treats spaces as separators between different commands or arguments. If you type `cat spaces in this file`, Linux thinks you want to open 4 separate files named "spaces", "in", "this", and "file". Grouping the words inside quotes treats the entire name as a single entity.
+
+The basic syntax is:
+```bash
+cat "file name with spaces"
+```
+
+**Common Examples & Flags:**
+* **Using double quotes:** `cat "my document.txt"` (Safely handles spaces).
+* **Using backslash escaping (`\`):** `cat my\ document.txt` (The backslash tells the terminal to ignore the special meaning of the very next space character).
+
 ---
 
 ### Level 3 -> 4
-**Concept:** Navigating directories and using find to reveal hidden files starting with a dot (.).
+**Concept:** Navigating directories and using find or list flags to reveal hidden files starting with a dot (.).
 
 **Command:**
 ```bash
 cd inhere
-find . inhere
+find .
 cat "... Hiding-From-You"
 ```
+
+**How it works in practice:**
+In Linux, any file or folder that starts with a full stop (`.`) is automatically hidden from standard view. This keeps configuration files clean and out of sight. You need to use specific tools or flags to tell the operating system to show you everything, hidden or not.
+
+The basic syntax is:
+```bash
+ls -a
+find .
+```
+
+**Common Examples & Flags:**
+* **List all items (`-a`):** `ls -a` (Stands for "all", revealing hidden directories like `.` and `..`).
+* **Find items in the current spot (`.`):** `find .` (Recursively lists every hidden and visible file underneath your current directory).
 
 ---
 
@@ -60,6 +111,18 @@ file ./*
 cat ./-file07
 ```
 
+**How it works in practice:**
+Extensions (like `.txt` or `.exe`) don't actually matter to the Linux kernel; a file's true nature depends on its internal data structure. When you face dozens of files filled with garbled, compiled binary code, the `file` command peeks inside the metadata to tell you exactly what kind of file it is before you try opening it.
+
+The basic syntax is:
+```bash
+file filename
+```
+
+**Common Examples & Flags:**
+* **Check all files in a folder (`*`):** `file ./*` (The wildcard symbol `*` matches everything, allowing you to scan a whole directory at once).
+* **Brief summary mode (`-b`):** `file -b text.txt` (Outputs just the file type description without repeating the filename).
+
 ---
 
 ### Level 5 -> 6
@@ -73,6 +136,21 @@ find . -type f -size 1033c ! -executable
 cat ./maybehere07/.file2
 ```
 
+**How it works in practice:**
+When you are looking for a needle in a haystack across hundreds of subfolders, you filter your search by setting specific parameters—like size constraints, file types, or negative filters (like things you aren't allowed to execute)—to drastically narrow down your targets.
+
+The basic syntax is:
+```bash
+find /path -type f -size [number]c
+```
+
+**Common Examples & Flags:**
+* **Filter by file type (`-type f` / `-type d`):** `find . -type d` (Limits results exclusively to directories instead of files).
+* **Filter by exact byte size (`c`):** `find . -size 500c` (The `c` modifier stands for bytes/characters).
+* **Logical NOT (`!`):** `find . ! -executable` (Finds files that do *not* have permission to run as a program).
+
+---
+
 ### Level 6 -> 7
 **Concept:** Searching the entire root filesystem using specific ownership properties (user and group) and exact byte sizes while redirecting error streams (`2>/dev/null`) to filter out permission errors.
 
@@ -81,3 +159,40 @@ cat ./maybehere07/.file2
 find / -user bandit7 -group bandit6 -size 33c 2>/dev/null
 cat /var/lib/dpkg/info/bandit7.password
 ```
+
+**How it works in practice:**
+When looking through the entire operating system, you will constantly hit files belonging to other users or the core system administrator (`root`), resulting in a flood of "Permission denied" errors. You can redirect these annoying errors straight into a virtual trash bin (`/dev/null`) so you only see valid hits.
+
+The basic syntax is:
+```bash
+find /path -user username -group groupname 2>/dev/null
+```
+
+**Common Examples & Flags:**
+* **Filter by owner (`-user`):** `find / -user bandit7` (Locates items belonging to a particular user target).
+* **Filter by group (`-group`):** `find / -group bandit6` (Locates items associated with a particular security group).
+* **Silence errors (`2>/dev/null`):** `command 2>/dev/null` (Catches stream `2`, which is standard error, and drops it into a digital black hole).
+
+---
+
+### Level 7 -> 8
+**Concept:** Scanning massive data files using the `grep` utility to instantly target and extract lines matching a specific keyword.
+
+**Command:**
+```bash
+grep "millionth" data.txt
+```
+
+**How it works in practice:**
+Instead of manually opening a document and using `Ctrl + F`, you type a quick command in your terminal to find information instantly. 
+
+The basic syntax is:
+```bash
+grep "search_term" filename.txt
+```
+
+**Common Examples & Flags:**
+* **Search for a word:** `grep "error" server.log` (Pulls up every line containing the word "error").
+* **Ignore capitalization (`-i`):** `grep -i "apple" fruit.txt` (Finds "apple", "Apple", or "APPLE").
+* **Show line numbers (`-n`):** `grep -n "millionth" data.txt` (Displays the exact line number where the match was found).
+* **Search multiple files recursively (`-r`):** `grep -r "TODO" ./project_folder` (Searches through every single file in a project directory).
