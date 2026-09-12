@@ -196,3 +196,26 @@ grep "search_term" filename.txt
 * **Ignore capitalization (`-i`):** `grep -i "apple" fruit.txt` (Finds "apple", "Apple", or "APPLE").
 * **Show line numbers (`-n`):** `grep -n "millionth" data.txt` (Displays the exact line number where the match was found).
 * **Search multiple files recursively (`-r`):** `grep -r "TODO" ./project_folder` (Searches through every single file in a project directory).
+
+---
+
+### Level 8 -> 9
+**Concept:** Sorting data and counting line occurrences using a pipe (`|`) to visually isolate the only non-repeating password string.
+
+**Command:**
+```bash
+sort data.txt | uniq -c
+```
+
+**How it works in practice:**
+The `uniq` command requires identical lines to be adjacent to count them. Running `sort` first groups all duplicate rows together. When piped into `uniq -c`, the system prefixes every line with a number showing its total occurrence count, allowing you to instantly spot the password prefixed with a `1`.
+
+The basic syntax is:
+```bash
+sort filename.txt | uniq [flag]
+```
+
+**Common Examples & Flags:**
+* **Count occurrences (`-c`):** `sort files.txt | uniq -c` (Prefixes each line with the number of times it repeated).
+* **Show only completely unique lines (`-u`):** `sort files.txt | uniq -u` (Completely hides any line that had a duplicate).
+* **Show only duplicated lines (`-d`):** `sort files.txt | uniq -d` (Prints only the lines that repeated).
