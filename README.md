@@ -266,3 +266,42 @@ echo -n "encoded_string" | base64 -d
 * **Decode data (`-d` / `--decode`):** `base64 -d file.b64` (Converts a Base64 text file back into its original text or binary format).
 * **Encode text into Base64:** `echo -n "hello" | base64` (Converts the plain text string "hello" into a Base64 encoded string).
 * **Ignore garbage characters (`-i`):** `base64 -d -i file.b64` (Ignores non-alphabet characters like random newlines or spaces that might break the decoder).
+
+---
+
+### Level 11 -> 12
+
+**Concept:** Decoding ROT13-encoded text using the `tr` utility to shift alphabetic characters by 13 positions.
+
+**Command:**
+
+```bash
+cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+```
+
+**Practical Output:**
+
+```bash
+$ cat data.txt
+Gur cnffjbeq vf TEBbmJCB8DlA0zTewHxVQ0JPLxMvDkeA
+
+$ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+The password is GROozWPO8OyN0mGjrUkID0WCYKkZiQxr
+```
+
+**How it works in practice:**
+ROT13 ("rotate by 13 places") is a simple substitution cipher that replaces each letter with the letter 13 positions away in the alphabet. Because the English alphabet has 26 letters, applying ROT13 twice returns the original text. By reading `data.txt` and piping its contents to `tr 'A-Za-z' 'N-ZA-Mn-za-m'`, the terminal maps the first 13 letters (`A-M` and `a-m`) to the second 13 letters (`N-Z` and `n-z`), and vice versa.
+
+The basic syntax is:
+
+```bash
+tr 'original_set' 'replacement_set' < filename.txt
+```
+
+*(Alternatively, you can pipe the contents using: `cat filename.txt | tr 'original' 'replacement'`)*
+
+**Common Examples & Flags:**
+
+* **Decode/Encode ROT13:** `tr 'A-Za-z' 'N-ZA-Mn-za-m'` (Rotates uppercase and lowercase letters by 13 positions).
+* **Delete characters (`-d`):** `tr -d '[:space:]'` (Removes whitespace characters such as spaces, tabs, and newlines).
+* **Translate case:** `tr 'a-z' 'A-Z'` (Converts lowercase letters into uppercase letters).
