@@ -271,12 +271,12 @@ echo -n "encoded_string" | base64 -d
 
 ### Level 11 -> 12
 
-**Concept:** Decoding ROT13-encoded text using the `tr` utility to shift alphabetic characters by 13 positions.
+**Concept:** Decoding ROT13-encoded text using the `tr` utility, while using `tr -d`, `fold`, and `paste` to clean and reconstruct the output.
 
 **Command:**
 
 ```bash
-cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+tr -d '[:space:]' < data.txt | fold -w1 | tr 'A-Za-z' 'N-ZA-Mn-za-m' | paste -sd "" -
 ```
 
 **Practical Output:**
@@ -285,23 +285,24 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 $ cat data.txt
 Gur cnffjbeq vf TEBbmJCB8DlA0zTewHxVQ0JPLxMvDkeA
 
-$ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
-The password is GROozWPO8OyN0mGjrUkID0WCYKkZiQxr
+$ tr -d '[:space:]' < data.txt | fold -w1 | tr 'A-Za-z' 'N-ZA-Mn-za-m' | paste -sd "" -
+The password is TEBozWPO8OyN0mGjrUkID0WCYKkZiQxr
 ```
 
 **How it works in practice:**
-ROT13 ("rotate by 13 places") is a simple substitution cipher that replaces each letter with the letter 13 positions away in the alphabet. Because the English alphabet has 26 letters, applying ROT13 twice returns the original text. By reading `data.txt` and piping its contents to `tr 'A-Za-z' 'N-ZA-Mn-za-m'`, the terminal maps the first 13 letters (`A-M` and `a-m`) to the second 13 letters (`N-Z` and `n-z`), and vice versa.
+ROT13 ("rotate by 13 places") is a simple substitution cipher that replaces each letter with the letter 13 positions away in the alphabet. Because the English alphabet has 26 letters, applying ROT13 twice returns the original text.
+
+The command first removes whitespace from `data.txt` using `tr -d '[:space:]'`. The `fold -w1` command then separates the text into individual characters. Each character is passed through `tr 'A-Za-z' 'N-ZA-Mn-za-m'`, which performs the ROT13 translation. Finally, `paste -sd "" -` joins the individual characters back into a single line.
 
 The basic syntax is:
 
 ```bash
-tr 'original_set' 'replacement_set' < filename.txt
+tr -d '[:space:]' < data.txt | fold -w1 | tr 'A-Za-z' 'N-ZA-Mn-za-m' | paste -sd "" -
 ```
-
-*(Alternatively, you can pipe the contents using: `cat filename.txt | tr 'original' 'replacement'`)*
 
 **Common Examples & Flags:**
 
+* **Delete characters (`-d`):** `tr -d '[:space:]' < data.txt` (Removes spaces, tabs, and newlines from the input).
+* **Split characters (`fold -w1`):** `fold -w1` (Wraps the input so that each line contains one character).
 * **Decode/Encode ROT13:** `tr 'A-Za-z' 'N-ZA-Mn-za-m'` (Rotates uppercase and lowercase letters by 13 positions).
-* **Delete characters (`-d`):** `tr -d '[:space:]'` (Removes whitespace characters such as spaces, tabs, and newlines).
-* **Translate case:** `tr 'a-z' 'A-Z'` (Converts lowercase letters into uppercase letters).
+* **Join lines (`paste -sd "" -`):** `paste -sd "" -` (Combines the individual lines back into one continuous string).
